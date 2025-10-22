@@ -15,6 +15,9 @@ defaults:
   run:
     shell: bash --noprofile --norc -CeEuo pipefail {0}
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   build:
     strategy:
@@ -55,22 +58,15 @@ jobs:
 
       - name: bench
         run: |
-          git clone https://github.com/ahaoboy/js-engine-benchmark
-          cd js-engine-benchmark
-          npm run build
+          curl -L -o run.js https://github.com/ahaoboy/js-engine-benchmark/releases/download/nightly/run.js
 
-          node dist/run.js
-          mujs-one dist/run.js
-          mujs dist/run.js
+          node run.js
+          mujs-one run.js
+          mujs run.js
 
       - name: react
         run: |
-          git clone https://github.com/ahaoboy/mujs-react
-          cd mujs-react
-          pnpm install
-          pnpm run build
+          curl -L -o babel.zip "https://github.com/ahaoboy/mujs-react/releases/download/nightly/babel.zip" && unzip -j babel.zip "index.js" -d .
 
-          mujs-one es5/index.js
-          mujs-one es5/bench.js
-          mujs es5/index.js
-          mujs es5/bench.js
+          mujs-one index.js
+          mujs index.js
